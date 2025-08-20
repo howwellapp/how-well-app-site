@@ -2,19 +2,44 @@
 <!-- https://chatgpt.com/c/68a4aa9a-a4c4-8331-98c9-c7719bc95275 -->
 <html>
   <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+      body {
+        font-size: 16px;
+        line-height: 1.5;
+        font-family: Arial, sans-serif;
+        margin: 20px;
+      }
+      
+      a {
+        font-size: 18px;
+        display: block;
+        padding: 10px;
+        margin: 5px 0;
+        text-decoration: none;
+        color: #0066cc;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+      }
+      
+      a:hover {
+        background-color: #e9e9e9;
+      }
+    </style>
     <script>
       window.onload = () => {
         const params = new URLSearchParams(window.location.search);
         const path = params.get("path");
         if (path) {
           window.location.href = 'howwellapp://' + path;
-        } else {
-          document.body.innerHTML = "<p>No redirect URL provided</p>";
         }
       };
     </script>
   </head>
   <body>
-    <p>Redirecting...</p>
+    <h3>Prod</h3>
+    <a href="howwellapp://quiz/6e0201ed-a383-436a-a6e4-b17b41245e6f/take">K</a>
+    <a href="howwellapp://quiz/6794e8e6-f9be-4c9b-8067-7a5ed61d3da5/take">How Well App</a>
   </body>
 </html>
