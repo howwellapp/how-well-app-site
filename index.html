@@ -77,17 +77,14 @@
               return;
             }
 
-            const intent = [
-              `intent://${parsed.host}${parsed.pathname}${parsed.search}`,
-              '#Intent',
-              'scheme=https',
-              'package=com.howwellapp.howwellapp.dev',
-              `S.browser_fallback_url=${encodeURIComponent(parsed.href)}`,
-              'end'
-            ].join(';');
+            const intent = `intent://${parsed.host}${parsed.pathname}${parsed.search}` +
+              '#Intent;' +
+              'scheme=https;' +
+              'package=com.howwellapp.howwellapp.dev;' +
+              `S.browser_fallback_url=${encodeURIComponent(parsed.href)};` +
+              'end';
 
             status.textContent = 'Opening app...';
-            console.log('Launching intent:', intent);
             window.location.replace(intent);
           } catch (err) {
             status.textContent = `Clipboard read failed: ${err.message}`;
