@@ -32,7 +32,7 @@
         const params = new URLSearchParams(window.location.search);
         const path = params.get("path");
         if (path) {
-          window.location.href = 'howwellapp://' + path;
+          window.location.href = path;
         }
       };
     </script>
