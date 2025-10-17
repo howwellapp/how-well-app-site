@@ -22,19 +22,78 @@
         border-radius: 5px;
         background-color: #f9f9f9;
       }
-      
+
       a:hover {
         background-color: #e9e9e9;
       }
+
+      button {
+        font-size: 18px;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        background-color: #0066cc;
+        color: #fff;
+        cursor: pointer;
+      }
+
+      button:hover {
+        background-color: #004c99;
+      }
     </style>
     <script>
-      window.onload = () => {
+      window.addEventListener('DOMContentLoaded', () => {
         const params = new URLSearchParams(window.location.search);
         const path = params.get("path");
         if (path) {
           window.location.href = path;
+          return;
         }
-      };
+
+        const openButton = document.getElementById('open-from-clipboard');
+        const status = document.getElementById('status');
+
+        if (!openButton || !status) {
+          return;
+        }
+
+        openButton.addEventListener('click', async () => {
+          if (!navigator.clipboard || !navigator.clipboard.readText) {
+            status.textContent = 'Clipboard API unavailable.';
+            return;
+          }
+
+          try {
+            const text = (await navigator.clipboard.readText()).trim();
+            if (!text) {
+              status.textContent = 'Clipboard empty.';
+              return;
+            }
+
+            const parsed = new URL(text);
+            if (parsed.host !== '0j5wk.app.link') {
+              status.textContent = 'Clipboard is not a Branch link.';
+              return;
+            }
+
+            const intent = [
+              `intent://${parsed.host}${parsed.pathname}${parsed.search}`,
+              '#Intent',
+              'scheme=https',
+              'package=com.howwellapp.howwellapp.dev',
+              `S.browser_fallback_url=${encodeURIComponent(parsed.href)}`,
+              'end'
+            ].join(';');
+
+            status.textContent = 'Opening app...';
+            console.log('Launching intent:', intent);
+            window.location.replace(intent);
+          } catch (err) {
+            status.textContent = `Clipboard read failed: ${err.message}`;
+          }
+        });
+      });
     </script>
   </head>
   <body>
@@ -42,5 +101,7 @@
     <a href="https://f2v4n.app.link/GgdubEEuMWb">How Well App</a>
     <h3>Dev</h3>
     <a href="https://0j5wk.app.link/Z6f0nDsPwXb">How Well App</a>
+    <button id="open-from-clipboard">Open link from clipboard</button>
+    <p id="status"></p>
   </body>
 </html>
