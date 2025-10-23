@@ -30,7 +30,7 @@
       button {
         font-size: 18px;
         padding: 10px;
-        margin: 10px 0;
+        margin: 50px 0;
         border: 1px solid #ddd;
         border-radius: 5px;
         background-color: #0066cc;
@@ -41,58 +41,68 @@
       button:hover {
         background-color: #004c99;
       }
+
+      input[type="text"] {
+        font-size: 16px;
+        width: 100%;
+        padding: 10px;
+        margin: 10px 0;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
     </style>
-    <script>
-      window.addEventListener('DOMContentLoaded', () => {
-        const params = new URLSearchParams(window.location.search);
-        const path = params.get("path");
-        if (path) {
-          window.location.href = path;
+  </head>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+      const logArea = document.getElementById('status');
+      const log = (msg) => {
+        console.log(msg);
+        const entry = document.createElement('div');
+        entry.textContent = `${new Date().toISOString()} ${msg}`;
+        logArea.prepend(entry);
+      };
+
+      const openButton = document.getElementById('open-from-clipboard');
+      if (!openButton) {
+        return;
+      }
+
+      openButton.addEventListener('click', async () => {
+        log('Button tapped');
+        if (!navigator.clipboard?.readText) {
+          log('Clipboard API unavailable');
           return;
         }
 
-        const openButton = document.getElementById('open-from-clipboard');
-        const status = document.getElementById('status');
-
-        if (!openButton || !status) {
-          return;
-        }
-
-        openButton.addEventListener('click', async () => {
-          if (!navigator.clipboard || !navigator.clipboard.readText) {
-            status.textContent = 'Clipboard API unavailable.';
+        try {
+          const text = (await navigator.clipboard.readText()).trim();
+          log(`Clipboard contents: "${text}"`);
+          if (!text) {
+            log('Clipboard empty');
             return;
           }
 
-          try {
-            const text = (await navigator.clipboard.readText()).trim();
-            if (!text) {
-              status.textContent = 'Clipboard empty.';
-              return;
-            }
+          const parsed = new URL(text);
+          log(`Parsed host: ${parsed.host}`);
 
-            const parsed = new URL(text);
-            if (parsed.host !== '0j5wk.app.link') {
-              status.textContent = 'Clipboard is not a Branch link.';
-              return;
-            }
-
-            const intent = `intent://${parsed.host}${parsed.pathname}${parsed.search}` +
-              '#Intent;' +
-              'scheme=https;' +
-              'package=com.howwellapp.howwellapp.dev;' +
-              `S.browser_fallback_url=${encodeURIComponent(parsed.href)};` +
-              'end';
-
-            status.textContent = 'Opening app...';
-            window.location.replace(intent);
-          } catch (err) {
-            status.textContent = `Clipboard read failed: ${err.message}`;
+          if (parsed.host !== '0j5wk.app.link') {
+            log('Not a Branch link, aborting');
+            return;
           }
-        });
+
+          const intent = `intent://
+  ${parsed.host}${parsed.pathname}${parsed.search}` +
+            '#Intent;scheme=https;package=com.howwellapp.howwellapp.dev;' +
+            `S.browser_fallback_url=${encodeURIComponent(parsed.href)};end`;
+          log('Launching intent');
+          window.location.replace(intent);
+        } catch (err) {
+          log(`Clipboard read failed: ${err.message}`);
+        }
       });
-    </script>
-  </head>
+    });
+  </script>
+
   <body>
     <h3>Prod</h3>
     <a href="https://f2v4n.app.link/GgdubEEuMWb">How Well App</a>
@@ -100,5 +110,10 @@
     <a href="https://0j5wk.app.link/Z6f0nDsPwXb">How Well App</a>
     <button id="open-from-clipboard">Open link from clipboard</button>
     <p id="status"></p>
+    <div id="manual-fallback" hidden>
+      <label for="manual-link">Paste Branch dev link:</label>
+      <input id="manual-link" type="text" autocomplete="off" spellcheck="false" placeholder="https://0j5wk.app.link/...">
+      <button id="open-manual">Open pasted link</button>
+    </div>
   </body>
 </html>
