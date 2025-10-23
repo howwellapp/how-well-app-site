@@ -90,11 +90,10 @@
             return;
           }
 
-          const intent = `intent://
-  ${parsed.host}${parsed.pathname}${parsed.search}` +
+          const intent = `intent://${parsed.host}${parsed.pathname}${parsed.search}` +
             '#Intent;scheme=https;package=com.howwellapp.howwellapp.dev;' +
             `S.browser_fallback_url=${encodeURIComponent(parsed.href)};end`;
-          log('Launching intent');
+          log('Launching intent: ${intent}');
           window.location.replace(intent);
         } catch (err) {
           log(`Clipboard read failed: ${err.message}`);
